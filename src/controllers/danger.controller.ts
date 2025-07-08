@@ -25,3 +25,16 @@ export const reportDangerZone = async (
     res.status(500).json({ message: "حدث خطأ أثناء إضافة منطقة الخطر" });
   }
 };
+
+// جلب كل مناطق الخطر
+export const getAllDangerZones = async (req: Request, res: Response) => {
+  try {
+    const zones = await DangerZone.find().populate(
+      "reportedBy",
+      "name phoneNumber"
+    );
+    res.status(200).json(zones);
+  } catch (error) {
+    res.status(500).json({ message: "حدث خطأ أثناء جلب مناطق الخطر" });
+  }
+};
