@@ -5,21 +5,32 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import logger from './utils/logger';
 import { dev, port } from './utils/helpers';
-import authRoutes from './routes/auth.routes';
-import dashboardRoutes from './routes/dashboard.routes';
-import { OK, INTERNAL_SERVER_ERROR} from './utils/http-status';
+import { OK, INTERNAL_SERVER_ERROR } from './utils/http-status';
 import { connect } from './config/database';
 import { AppError } from './utils/errors';
-
+import { createServer } from 'node:http';
+import { Server } from 'socket.io';
+import userRoutes from './routes/user.routes';
+import serviceRoutes from './routes/service.routes';
+import dangerRoutes from './routes/danger.routes';
+import { initSocket } from './socket/notification';
+import webhookRoutes from './routes/webhook.routes';
 
 dotenv.config();
 
-
 const app: Express = express();
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173', 'https://weather-c3fd.onrender.com'];//put front-end page url
+const servers = createServer(app);
+const io = new Server(servers, {
+  cors: {
+    origin: ['http://localhost:3000', 'http://localhost:5173', 'https://weather-c3fd.onrender.com'],
+    credentials: true,
+  },
+});
 
+// Middleware
 app.use(cors({
   origin: (origin, callback) => {
+    const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173', 'https://weather-c3fd.onrender.com'];
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -29,23 +40,27 @@ app.use(cors({
   credentials: true
 }));
 app.use(helmet());
-app.use(morgan('tiny', {
-  stream: {
-    write: (message) => logger.info(message.trim())
-  }
-}));
+app.use(morgan('tiny', { stream: { write: (message) => logger.info(message.trim())} }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/auth', authRoutes);
-app.use('/api/dashboard', dashboardRoutes);
+// Routes
+
+app.use('/api/users', userRoutes);
+app.use('/api/services', serviceRoutes);
+app.use('/api/danger-zones', dangerRoutes);
+app.use('/api/webhook', webhookRoutes);
 
 app.get('/', (req: Request, res: Response) => {
-  res
-    .status(OK)
-    .json({ message: 'attendance API - Welcome!' });
+  res.status(OK).json({ message: 'Bassar API - Welcome!' });
 });
 
+
+// Socket.io
+initSocket(io);
+
+
+// Error handler
 app.use((err: Error | AppError, req: Request, res: Response, next: NextFunction): void => {
   logger.error('Error:', err.message);
 
@@ -59,16 +74,18 @@ app.use((err: Error | AppError, req: Request, res: Response, next: NextFunction)
   }
 
   res.status(INTERNAL_SERVER_ERROR).json({
-    status: 'error', 
+    status: 'error',
     message: 'Something went wrong!',
     ...(dev && { error: err.message, stack: err.stack })
   });
 });
-const server = async ()=>{
-await connect(); 
-app.listen(port, () => {
-  logger.info(`server is running at http://localhost:${port}`);
-})
+
+
+
+
+// Start server
+const server = async () => { await connect();
+  servers.listen(port, () => { logger.info(`✅ Server is running at http://localhost:${port}`);});
 };
 
-server()
+server();

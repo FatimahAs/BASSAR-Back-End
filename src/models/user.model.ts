@@ -1,43 +1,83 @@
-import { Schema, Document, model,models } from "mongoose";
-import bcrypt from 'bcryptjs'
-//user has 1-name 2-email 3-phone numebr 5-location perisice 4-user type > helper, user, admin >> pull user location
+import mongoose, { Document, Types } from 'mongoose';
 
-export interface UserDocument extends Document {
-  email: string
-  name: string
-  password: string
-  phone: number
-  location: string
-  role: 'admin' | 'helper' | 'user' 
-  createdAt: Date
-  updatedAt: Date
- comparePassword(candidatePassword: string): Promise<boolean>
+// 👤 نوع التقييم
+interface Rating {
+  user: Types.ObjectId;
+  rating: number;
+  comment?: string;
 }
 
-const UserSchema = new Schema<UserDocument>(
-    {
-        email:{type: String, unique: true, required: true},
-        name:{type: String, required: true},
-        password:{type: String,required: true},
-        role:{type: String, enum: ['admin' , 'helper' , 'user'], default: 'user', required: true}
-       },
-        {timestamps: true }
-)
+// 👤 نوع المستخدم الأساسي
+//export interface UserDocument extends Document {
+//  name: string;
+//  email: string;
+//  phoneNumber?: string;
+//  password: string;
+//  location?: {
+//    lat: number;
+//    lng: number;
+//  };
+//  role: 'user' | 'helper' | 'admin';
+//  ratings: Rating[];
+//  averageRating?: number;
+//}
 
-UserSchema.pre<UserDocument>('save', async function (next) {
-if (!this.isModified('password')) return next();
 
-  try {
-    this.password = await bcrypt.hash(this.password, 10);
-    next();
-  } catch (e) {
-    next(e as Error);
-  }
+
+export interface UserDocument extends Document {
+  _id: Types.ObjectId;
+  name: string;
+  email: string;
+  phoneNumber?: string;
+  password: string;
+  location?: {
+    lat: number;
+    lng: number;
+  };
+  role: 'user' | 'helper' | 'admin';
+  ratings: {
+    user: Types.ObjectId;
+    rating: number;
+    comment?: string;
+  }[];
+}
+
+
+
+
+const ratingSchema = new mongoose.Schema(
+  {
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    rating: { type: Number, required: true, min: 1, max: 5 },
+    comment: String,
+  },
+  { timestamps: true }
+);
+
+const userSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    email: { type: String, unique: true, required: true },
+    phoneNumber: String,
+    password: { type: String, required: true },
+    location: {
+      lat: Number,
+      lng: Number,
+    },
+    role: {
+      type: String,
+      enum: ['user', 'helper', 'admin'],
+      default: 'user',
+    },
+    ratings: [ratingSchema],
+  },
+  { timestamps: true }
+);
+
+userSchema.virtual('averageRating').get(function () {
+  if (!this.ratings.length) return 0;
+  const sum = this.ratings.reduce((acc: number, r: any) => acc + r.rating, 0);
+  return sum / this.ratings.length;
 });
 
-UserSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
-  return bcrypt.compare(candidatePassword, this.passwordHash);
-};
-
-const UserCollection = models.User || model<UserDocument>('User', UserSchema);
- export default UserCollection
+export const User = mongoose.model<UserDocument>('User', userSchema);
