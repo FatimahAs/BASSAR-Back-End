@@ -8,7 +8,7 @@ const dangerZoneSchema = new mongoose.Schema(
       lat: { type: Number, required: true },
       lng: { type: Number, required: true },
     },
-    city: { type: String, required: true },
+    city: { type: String },
     reportedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
