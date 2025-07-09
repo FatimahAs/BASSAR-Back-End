@@ -14,7 +14,6 @@ import userRoutes from './routes/user.routes';
 import serviceRoutes from './routes/service.routes';
 import dangerRoutes from './routes/danger.routes';
 import { initSocket } from './socket/notification';
-import webhookRoutes from './routes/webhook.routes';
 
 dotenv.config();
 
@@ -49,7 +48,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/users', userRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/danger-zones', dangerRoutes);
-app.use('/api/webhook', webhookRoutes);
+
 
 app.get('/', (req: Request, res: Response) => {
   res.status(OK).json({ message: 'Bassar API - Welcome!' });

@@ -1,10 +1,8 @@
-import { UserDocument } from '../../src/models/User.model';
-
+import * as express from "express"
 declare global {
-  namespace Express {
-    interface Request {
-      user?: UserDocument;
+    namespace Express {
+        interface Request {
+            user? : Record<string,any>
+        }
     }
-  }
 }
-

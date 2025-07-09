@@ -1,22 +1,20 @@
-import { Router } from 'express';
-import * as UserController from '../controllers/user.controller';
-import { protectRoute } from '../middleware/auth.middleware';
+import express from 'express';
+import {
+  registerUser,
+  registerHelper,
+  updateUser,
+  deleteUser,
+} from '../controllers/user.controller';
+import { loginUser } from '../controllers/auth.controller';
 
-const router = Router();
+const router = express.Router();
 
+router.post('/register-user', registerUser);
+router.post('/register-helper', registerHelper);
+router.post('/login', loginUser);
 
-
-router.post('/register',UserController.registerUser);
-
-
-router.post('/login', UserController.loginUser);
-
-router.post('/logOut', UserController.logOut);
-
-
-router.get('/helpers', UserController.getHelpers);
-
-
-router.post('/rate/:helperId', protectRoute, UserController.rateHelper);
+//auth
+router.put('/update/:id', updateUser);
+router.delete('/delete/:id', deleteUser);
 
 export default router;
