@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-// نحفظ نوع المستخدم في request
+
 interface AuthRequest extends Request {
   user?: {
     role: string;

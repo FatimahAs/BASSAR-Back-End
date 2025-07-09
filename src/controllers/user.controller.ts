@@ -46,9 +46,10 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
       { new: true }
     );
 
-    if (!user) res.status(404).json({ message: 'المستخدم غير موجود' });
-    return;
-
+    if (!user) {
+      res.status(404).json({ message: 'المستخدم غير موجود' });
+      return;
+    }
     res.json(user);
   } catch (err) {
     res.status(500).json({ message: 'خطأ في التعديل', error: err });
@@ -62,9 +63,10 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
   try {
     const deletedUser = await User.findByIdAndDelete(userId);
 
-    if (!deletedUser) res.status(404).json({ message: 'المستخدم غير موجود' });
-    return
-
+    if (!deletedUser) {
+      res.status(404).json({ message: 'المستخدم غير موجود' });
+      return
+    }
     res.json({ message: 'تم الحذف بنجاح' });
   } catch (err) {
     res.status(500).json({ message: 'خطأ في الحذف', error: err });

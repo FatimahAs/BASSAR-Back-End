@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const serviceSchema = new mongoose.Schema({
-  type: { type: String, required: true }, // مثلاً: "سطحة"، "بطارية"
+  type: { type: String, required: true }, 
   price: { type: Number, required: true },
 });
 
