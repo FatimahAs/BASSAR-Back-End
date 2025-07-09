@@ -1,28 +1,11 @@
 import mongoose, { Document, Types } from 'mongoose';
 
-// 👤 نوع التقييم
+
 interface Rating {
   user: Types.ObjectId;
   rating: number;
   comment?: string;
 }
-
-// 👤 نوع المستخدم الأساسي
-//export interface UserDocument extends Document {
-//  name: string;
-//  email: string;
-//  phoneNumber?: string;
-//  password: string;
-//  location?: {
-//    lat: number;
-//    lng: number;
-//  };
-//  role: 'user' | 'helper' | 'admin';
-//  ratings: Rating[];
-//  averageRating?: number;
-//}
-
-
 
 export interface UserDocument extends Document {
   _id: Types.ObjectId;
