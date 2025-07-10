@@ -3,10 +3,10 @@ import { User } from '../models/user.model';
 import jwt from 'jsonwebtoken';
 
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
-  const { email, password } = req.body;
+  const { phone, password } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ phone });
     if (!user || user.password !== password) {
 		res.status(401).json({ message: 'بيانات الدخول غير صحيحة' });
 		return

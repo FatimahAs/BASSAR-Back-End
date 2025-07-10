@@ -9,6 +9,7 @@ const router = express.Router();
 
 router.get('/', getServices);
 
+router.post('/request', protectRoute, requestService);
 
 router.post('/request/:serviceId', protectRoute, requestService);
 

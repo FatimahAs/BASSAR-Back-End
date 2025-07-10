@@ -14,7 +14,7 @@ import { upload } from '../middleware/upload.middleware';
 
 const router = express.Router();
 
-router.get('/danger-zones', getAllDangerZones);
+//router.get('/danger-zones', getAllDangerZones);
 router.get('/danger-zones/nearby', getNearbyZones);
 
 router.post('/danger-zones', protectRoute, addDangerZone);

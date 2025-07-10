@@ -27,6 +27,8 @@
         "cors": "^2.8.5",
         "dotenv": "^17.0.1",
         "express": "^5.1.0",
+        "geolib": "^3.3.4",
+        "haversine": "^1.1.1",
         "helmet": "^8.1.0",
         "jsonwebtoken": "^9.0.2",
         "mongodb": "^6.17.0",
