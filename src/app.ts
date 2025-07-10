@@ -21,7 +21,7 @@ const app: Express = express();
 const servers = createServer(app);
 const io = new Server(servers, {
   cors: {
-    origin: ['http://localhost:3000', 'http://localhost:5173', 'https://weather-c3fd.onrender.com'],
+    origin: ['http://localhost:3000', 'http://localhost:5173', 'https://bassar-back-end.onrender.com/'],
     credentials: true,
   },
 });
@@ -29,7 +29,7 @@ const io = new Server(servers, {
 // Middleware
 app.use(cors({
   origin: (origin, callback) => {
-    const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173', 'https://weather-c3fd.onrender.com'];
+    const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173', 'https://bassar-back-end.onrender.com/'];
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
